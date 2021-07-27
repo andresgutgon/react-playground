@@ -51,6 +51,7 @@ function toggleTodo (
 
 type Action =
   | { type: 'addTodo', todo: Todo }
+  | { type: 'reset', todos: Array<Todo> }
   | { type: 'removeTodo', text: string }
   | { type: 'resolveTodo', text: string }
   | { type: 'unresolveTodo', text: string }
@@ -68,6 +69,8 @@ const reducer = (locale: string) => (state: State, action: Action) => {
       return toggleTodo(state, action.text, true, locale)
     case 'unresolveTodo':
       return toggleTodo(state, action.text, false, locale)
+    case 'reset':
+      return action.todos
     default:
       throw new Error();
   }
@@ -76,6 +79,7 @@ const reducer = (locale: string) => (state: State, action: Action) => {
 type Props = { locale: string, initialTodos: Array<Todo> }
 type ReturnType = {
   todos: Array<Todo>,
+  reset: () => void,
   addTodo: (text: string) => void,
   removeTodo: (text: string) => () => void,
   resolveTodo: (text: string) => void,
@@ -98,8 +102,12 @@ const useTodos = ({ initialTodos, locale }: Props): ReturnType => {
   const unresolveTodo = (text: string) => {
     dispatch({ type: 'unresolveTodo', text })
   }
+  const reset = () => {
+    dispatch({ type: 'reset', todos: initialTodos })
+  }
   return {
     todos,
+    reset,
     addTodo,
     removeTodo,
     resolveTodo,

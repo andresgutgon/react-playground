@@ -5,7 +5,7 @@ import useTodos, { Todo } from 'hooks/useTodos'
 import { todos as initialTodos } from './todos.json'
 
 function App () {
-  const { todos, addTodo, resolveTodo, unresolveTodo, removeTodo } = useTodos({ locale: 'en', initialTodos })
+  const { todos, reset, addTodo, resolveTodo, unresolveTodo, removeTodo } = useTodos({ locale: 'en', initialTodos })
   const [text, setInput] = useState('')
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -53,10 +53,18 @@ function App () {
         )}
         {!todos.length && (
           <div
-            className="flex items-center justify-center py-10 text-gray-600"
+            className="flex items-center flex-col justify-center py-10 text-gray-600 space-y-4"
             data-testid="blank-slate"
           >
-            🎉 &nbsp;No todos, you're free!
+            <div>
+              🎉 &nbsp;No todos, you're free!
+            </div>
+            <button
+              onClick={() => reset()}
+              className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
+            >
+                Reset todos
+            </button>
           </div>
         )}
       </div>

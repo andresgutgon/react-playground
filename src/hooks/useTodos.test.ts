@@ -166,3 +166,29 @@ test('should not un-resolve a non-existing todo', () => {
     { text: 'C third resolved todo', resolved: true }
   ])
 })
+
+test('reset method', () => {
+  const { result } = renderHook(() => useTodos({
+    locale,
+    initialTodos: [{ text: 'onlyOne', resolved: false }]
+  }))
+
+  act(() => {
+    result.current.addTodo('A Another todo')
+    result.current.addTodo('B Another todo')
+    result.current.addTodo('C Another todo')
+  })
+
+  expect(result.current.todos).toEqual([
+    { text: 'A Another todo', resolved: false },
+    { text: 'B Another todo', resolved: false },
+    { text: 'C Another todo', resolved: false },
+    { text: 'onlyOne', resolved: false }
+  ])
+
+  act(() => { result.current.reset() })
+
+  expect(result.current.todos).toEqual([
+    { text: 'onlyOne', resolved: false }
+  ])
+})
