@@ -5,12 +5,14 @@ type Todo = {
   resolved: boolean
 }
 
-function sortTodos (todos: Array<Todo>): Array<Todo> {
+const sortTodos = (locale: string) => (todos: Array<Todo>): Array<Todo> => {
   return todos.sort((a: Todo, b: Todo) => {
     if (a.resolved === b.resolved) {
-      if (a.text < b.text) { return -1 }
-      if (a.text > b.text) { return 1 }
-      return 0
+      return a.text.localeCompare(
+        b.text,
+        locale,
+        { sensitivity: 'base' }
+      )
     }
 
     return Number(a.resolved) - Number(b.resolved)
@@ -31,12 +33,17 @@ function existingTodo (state: State, text: string): boolean {
   return !!findTodo(state, text)
 }
 
-function toggleTodo (state: State, text: string, resolved: boolean): Array<Todo> {
+function toggleTodo (
+  state: State,
+  text: string,
+  resolved: boolean,
+  locale: string
+): Array<Todo> {
   const todo = findTodo(state, text)
 
   if (!todo) return state
 
-  return sortTodos([
+  return sortTodos(locale)([
     ...filterTodo(state, text),
     { text: todo.text, resolved }
   ])
@@ -47,42 +54,42 @@ type Action =
   | { type: 'removeTodo', text: string }
   | { type: 'resolveTodo', text: string }
   | { type: 'unresolveTodo', text: string }
-function reducer (state: State, action: Action) {
+const reducer = (locale: string) => (state: State, action: Action) => {
   switch (action.type) {
     case 'addTodo':
       const alreadyCreated = existingTodo(state, action.todo.text)
 
       if (alreadyCreated) return state
 
-      return sortTodos([...state, action.todo])
+      return sortTodos(locale)([...state, action.todo])
     case 'removeTodo':
       return filterTodo(state, action.text)
     case 'resolveTodo':
-      return toggleTodo(state, action.text, true)
+      return toggleTodo(state, action.text, true, locale)
     case 'unresolveTodo':
-      return toggleTodo(state, action.text, false)
+      return toggleTodo(state, action.text, false, locale)
     default:
       throw new Error();
   }
 }
 
-type Props = { initialTodos: Array<Todo> }
+type Props = { locale: string, initialTodos: Array<Todo> }
 type ReturnType = {
   todos: Array<Todo>,
   addTodo: (text: string) => void,
-  removeTodo: (text: string) => void,
+  removeTodo: (text: string) => () => void,
   resolveTodo: (text: string) => void,
   unresolveTodo: (text: string) => void
 }
-const useTodos = ({ initialTodos }: Props): ReturnType => {
-  const [todos, dispatch] = useReducer(reducer, initialTodos, sortTodos)
+const useTodos = ({ initialTodos, locale }: Props): ReturnType => {
+  const [todos, dispatch] = useReducer(reducer(locale), initialTodos, sortTodos(locale))
   const addTodo = (text: string) => {
     dispatch({
       type: 'addTodo',
       todo : { text, resolved: false }
     })
   }
-  const removeTodo = (text: string) => {
+  const removeTodo = (text: string) => () => {
     dispatch({ type: 'removeTodo', text })
   }
   const resolveTodo = (text: string) => {

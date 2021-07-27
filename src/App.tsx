@@ -5,7 +5,7 @@ import useTodos from 'hooks/useTodos'
 import { todos as initialTodos } from './todos.json'
 
 function App() {
-  const { todos, addTodo } = useTodos({ initialTodos })
+  const { todos, addTodo, removeTodo } = useTodos({ locale: 'en', initialTodos })
   const [text, setInput] = useState('')
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -25,7 +25,7 @@ function App() {
         <h1 className="text-gray-900 text-4xl font-semibold">Todo List</h1>
         <div className="flex mt-4">
           <input
-            className="shadow appearance-none border rounded w-full py-2 px-3 mr-4 text-grey-darker"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker"
             placeholder="Add Todo"
             value={text}
             onChange={onChange}
@@ -33,13 +33,27 @@ function App() {
           />
         </div>
 
-        <ul>
-          {todos.map((todo: any, index: number) =>
-            <li key={index}>
-              <Item text={todo.text} resolved={todo.resolved} />
-            </li>
-          )}
-        </ul>
+        {todos.length > 0 && (
+          <ul data-testid="todo-list">
+            {todos.map((todo: any, index: number) =>
+              <li key={index}>
+                <Item
+                  text={todo.text}
+                  resolved={todo.resolved}
+                  onDelete={removeTodo}
+                />
+              </li>
+            )}
+          </ul>
+        )}
+        {!todos.length && (
+          <div
+            className="flex items-center justify-center py-10 text-gray-600"
+            data-testid="blank-slate"
+          >
+            🎉 &nbsp;No todos, you're free!
+          </div>
+        )}
       </div>
     </div>
   )

@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react-hooks'
 import useTodos from './useTodos'
 
+const locale = 'en'
 const initialTodos = [
   { text: 'C Third todo', resolved: false },
   { text: 'A second resolved todo', resolved: true },
@@ -10,7 +11,7 @@ const initialTodos = [
 ]
 
 test('should order todos alphabeticaly and resolved todos last', () => {
-  const { result } = renderHook(() => useTodos({ initialTodos }))
+  const { result } = renderHook(() => useTodos({ locale, initialTodos }))
 
   expect(result.current.todos).toEqual([
     { text: 'B second todo', resolved: false },
@@ -22,7 +23,7 @@ test('should order todos alphabeticaly and resolved todos last', () => {
 })
 
 test('should add a todo and sort the result', () => {
-  const { result } = renderHook(() => useTodos({ initialTodos }))
+  const { result } = renderHook(() => useTodos({ locale, initialTodos }))
 
   act(() => {
     result.current.addTodo('A This is first now')
@@ -38,8 +39,25 @@ test('should add a todo and sort the result', () => {
   ])
 })
 
+test('should add a todo and sort the result starting with lowercase', () => {
+  const { result } = renderHook(() => useTodos({ locale, initialTodos }))
+
+  act(() => {
+    result.current.addTodo('a This is first now')
+  })
+
+  expect(result.current.todos).toEqual([
+    { text: 'a This is first now', resolved: false },
+    { text: 'B second todo', resolved: false },
+    { text: 'C Third todo', resolved: false },
+    { text: 'A first resolved todo', resolved: true },
+    { text: 'A second resolved todo', resolved: true },
+    { text: 'C third resolved todo', resolved: true }
+  ])
+})
+
 test('should not add todo with same text', () => {
-  const { result } = renderHook(() => useTodos({ initialTodos }))
+  const { result } = renderHook(() => useTodos({ locale, initialTodos }))
 
   act(() => {
     result.current.addTodo('B second todo')
@@ -55,10 +73,10 @@ test('should not add todo with same text', () => {
 })
 
 test('should remode the todo by text', () => {
-  const { result } = renderHook(() => useTodos({ initialTodos }))
+  const { result } = renderHook(() => useTodos({ locale, initialTodos }))
 
   act(() => {
-    result.current.removeTodo('B second todo')
+    result.current.removeTodo('B second todo')()
   })
 
   expect(result.current.todos).toEqual([
@@ -70,10 +88,10 @@ test('should remode the todo by text', () => {
 })
 
 test('should not remove a non-existing todo', () => {
-  const { result } = renderHook(() => useTodos({ initialTodos }))
+  const { result } = renderHook(() => useTodos({ locale, initialTodos }))
 
   act(() => {
-    result.current.removeTodo('Do not exists')
+    result.current.removeTodo('Do not exists')()
   })
 
   expect(result.current.todos).toEqual([
@@ -86,7 +104,7 @@ test('should not remove a non-existing todo', () => {
 })
 
 test('should resolve todo', () => {
-  const { result } = renderHook(() => useTodos({ initialTodos }))
+  const { result } = renderHook(() => useTodos({ locale, initialTodos }))
 
   act(() => {
     result.current.resolveTodo('B second todo')
@@ -102,7 +120,7 @@ test('should resolve todo', () => {
 })
 
 test('should not resolve a non-existing todo', () => {
-  const { result } = renderHook(() => useTodos({ initialTodos }))
+  const { result } = renderHook(() => useTodos({ locale, initialTodos }))
 
   act(() => {
     result.current.resolveTodo('Do not exists')
@@ -118,7 +136,7 @@ test('should not resolve a non-existing todo', () => {
 })
 
 test('should un-resolve todo', () => {
-  const { result } = renderHook(() => useTodos({ initialTodos }))
+  const { result } = renderHook(() => useTodos({ locale, initialTodos }))
 
   act(() => {
     result.current.unresolveTodo('A first resolved todo')
@@ -134,7 +152,7 @@ test('should un-resolve todo', () => {
 })
 
 test('should not un-resolve a non-existing todo', () => {
-  const { result } = renderHook(() => useTodos({ initialTodos }))
+  const { result } = renderHook(() => useTodos({ locale, initialTodos }))
 
   act(() => {
     result.current.unresolveTodo('Do not exists')
