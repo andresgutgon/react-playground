@@ -1,6 +1,6 @@
 import { useReducer } from 'react'
 
-type Todo = {
+export type Todo = {
   text: string,
   resolved: boolean
 }

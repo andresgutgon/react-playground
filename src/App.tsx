@@ -1,11 +1,11 @@
 import { useState, ChangeEvent, KeyboardEvent } from 'react'
 import Item from 'components/Item'
-import useTodos from 'hooks/useTodos'
+import useTodos, { Todo } from 'hooks/useTodos'
 
 import { todos as initialTodos } from './todos.json'
 
-function App() {
-  const { todos, addTodo, removeTodo } = useTodos({ locale: 'en', initialTodos })
+function App () {
+  const { todos, addTodo, resolveTodo, unresolveTodo, removeTodo } = useTodos({ locale: 'en', initialTodos })
   const [text, setInput] = useState('')
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -19,6 +19,9 @@ function App() {
     setInput('')
   }
 
+  const onItemToggle = ({ resolved, text }: Todo) => () => {
+    resolved ? unresolveTodo(text) : resolveTodo(text)
+  }
   return (
     <div className="h-100 w-full flex items-center justify-center bg-teal-lightest font-sans">
       <div className="bg-white rounded shadow space-y-10 p-6 m-4 w-full lg:w-3/4 lg:max-w-lg">
@@ -38,6 +41,8 @@ function App() {
             {todos.map((todo: any, index: number) =>
               <li key={index}>
                 <Item
+                  id={index}
+                  onToggle={onItemToggle(todo)}
                   text={todo.text}
                   resolved={todo.resolved}
                   onDelete={removeTodo}

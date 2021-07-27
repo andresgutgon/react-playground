@@ -1,5 +1,5 @@
 import React from 'react'
-import { waitFor, render, screen, within } from '@testing-library/react'
+import { getByText, getByTestId, waitFor, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import App from './App'
@@ -20,7 +20,7 @@ test('Show a list of todos', () => {
   const items = getAllByRole("listitem")
 
   expect(items.length).toBe(4)
-});
+})
 
 test('On key enter add a new todo', () => {
   render(<App />);
@@ -39,7 +39,7 @@ test('On key enter add a new todo', () => {
   const items = getAllByRole("listitem")
 
   expect(items.length).toBe(5)
-});
+})
 
 test('Delete all todos and see blank slate', async () => {
   render(<App />);
@@ -54,4 +54,21 @@ test('Delete all todos and see blank slate', async () => {
     blankSlate = screen.getByTestId('blank-slate')
     return expect(blankSlate).toBeInTheDocument()
   })
+})
+
+test('Check a todo item', async () => {
+  render(<App />);
+  const item = screen.getByTestId('todo-item-3')
+  const { getByLabelText } = within(item)
+  const checkbox = getByLabelText('Use Tailwind')
+
+  userEvent.click(checkbox)
+
+  const todoList = screen.getByTestId('todo-list')
+  const { getAllByRole } = within(todoList)
+  const items = getAllByRole("listitem")
+
+  const newTodoPosition = items[1]
+  const label = getByTestId(newTodoPosition, 'todo-label')
+  expect(label.textContent).toBe('Use Tailwind')
 });
