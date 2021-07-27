@@ -1,0 +1,20 @@
+{
+  "todos": [
+    {
+      "text": "Make interview",
+      "resolved": false
+    },
+    {
+      "text": "Use CRA",
+      "resolved": true
+    },
+    {
+      "text": "Use Tailwind",
+      "resolved": true
+    },
+    {
+      "text": "Test some components",
+      "resolved": false
+    }
+  ]
+}
