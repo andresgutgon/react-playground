@@ -57,7 +57,7 @@ function App () {
             data-testid="blank-slate"
           >
             <div>
-              🎉 &nbsp;No todos, you're free!
+              No todos, let's create one : )
             </div>
             <button
               onClick={() => reset()}
